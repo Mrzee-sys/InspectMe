@@ -6,10 +6,14 @@ function notFoundHandler(req, res) {
 
 function errorHandler(error, _req, res, _next) {
   const isValidationError = error.name === "ValidationError";
-  const statusCode = isValidationError ? 400 : error.statusCode || 500;
+  const isDuplicateKeyError = error && error.code === 11000;
+  const statusCode = isDuplicateKeyError ? 409 : isValidationError ? 400 : error.statusCode || 500;
+  const message = isDuplicateKeyError
+    ? "A record with the same unique value already exists for this user."
+    : error.message || "Internal server error.";
 
   res.status(statusCode).json({
-    message: error.message || "Internal server error.",
+    message,
   });
 }
 

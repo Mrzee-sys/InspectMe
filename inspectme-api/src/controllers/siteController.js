@@ -2,8 +2,8 @@ const asyncHandler = require("../utils/asyncHandler");
 const Site = require("../models/Site");
 const AuditLog = require("../models/AuditLog");
 
-const listSites = asyncHandler(async (_req, res) => {
-  const sites = await Site.find().sort({ siteCode: 1 });
+const listSites = asyncHandler(async (req, res) => {
+  const sites = await Site.find({ owner: req.user.id }).sort({ siteCode: 1 });
   return res.json(sites);
 });
 
@@ -15,6 +15,7 @@ const createSite = asyncHandler(async (req, res) => {
   }
 
   const site = await Site.create({
+    owner: req.user.id,
     siteCode: String(siteCode).toUpperCase().trim(),
     siteName: String(siteName).trim(),
   });

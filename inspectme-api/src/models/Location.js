@@ -2,6 +2,12 @@ const mongoose = require("mongoose");
 
 const locationSchema = new mongoose.Schema(
   {
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+      index: true,
+    },
     siteCode: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Site",
@@ -31,6 +37,6 @@ const locationSchema = new mongoose.Schema(
   }
 );
 
-locationSchema.index({ siteCode: 1, locationName: 1 }, { unique: true });
+locationSchema.index({ owner: 1, siteCode: 1, locationName: 1 }, { unique: true });
 
 module.exports = mongoose.model("Location", locationSchema);

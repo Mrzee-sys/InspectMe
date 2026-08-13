@@ -5,7 +5,13 @@ const notificationSchema = new mongoose.Schema(
     inspectionId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Inspection",
-      required: true,
+      required: false,
+      index: true,
+    },
+    healthSafetyInspectionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "HealthSafetyInspection",
+      required: false,
       index: true,
     },
     type: {

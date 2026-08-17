@@ -1,6 +1,11 @@
 import axios from 'axios'
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+let apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'https://inspectme.onrender.com'
+
+// Safety check to ensure the URL always routes to the /api endpoints
+if (!apiBaseUrl.endsWith('/api')) {
+  apiBaseUrl += '/api'
+}
 
 export const apiClient = axios.create({
   baseURL: apiBaseUrl,

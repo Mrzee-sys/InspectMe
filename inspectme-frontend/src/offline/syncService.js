@@ -4,11 +4,11 @@ import { getPendingOutboxItems, markOutboxItemSynced, putOutboxItem } from './db
 let syncing = false
 let listenersBound = false
 
-async function postInspection(payload) {
-  await apiClient.post('/inspections', payload)
+async function postInspection(endpoint, payload) {
+  await apiClient.post(endpoint, payload)
 }
 
-export async function queueInspectionSubmission(payload) {
+export async function queueInspectionSubmission(payload, endpoint = '/inspections') {
   const clientId =
     typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
       ? crypto.randomUUID()
@@ -16,6 +16,7 @@ export async function queueInspectionSubmission(payload) {
 
   await putOutboxItem({
     clientId,
+    endpoint,
     status: 'pending',
     createdAt: new Date().toISOString(),
     payload,
@@ -37,7 +38,7 @@ export async function flushInspectionOutbox() {
 
     for (const item of pendingItems) {
       try {
-        await postInspection(item.payload)
+        await postInspection(item.endpoint || '/inspections', item.payload)
         await markOutboxItemSynced(item.clientId)
         syncedCount += 1
       } catch {

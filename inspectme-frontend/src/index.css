@@ -5,10 +5,18 @@
 html,
 body,
 #root {
-  min-height: 100%;
+  min-height: 100vh;
 }
 
 body {
   margin: 0;
-  background: #f8fafc;
+  background-image: linear-gradient(
+      rgba(10, 18, 30, 0.45),
+      rgba(10, 18, 30, 0.45)
+    ),
+    url('/Background.png');
+  background-size: cover;
+  background-position: left top;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }

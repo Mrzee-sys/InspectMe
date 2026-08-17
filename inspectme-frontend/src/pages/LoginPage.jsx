@@ -39,7 +39,7 @@ function LoginPage() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-soft sm:p-8">
+    <section className="mx-auto w-full max-w-md rounded-2xl border border-white/45 bg-white/35 p-6 shadow-soft backdrop-blur-xl sm:p-8">
       <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-600">InspectMe Access</p>
       <h2 className="mt-2 text-2xl font-bold text-slate-900">Sign In</h2>
       <p className="mt-1 text-sm text-slate-600">Use your assigned inspection account.</p>

@@ -170,7 +170,7 @@ function getValidationErrors({ selectedSiteId, selectedLocationId, time, period,
   return errors
 }
 
-function InspectionsPage() {
+function InspectionsPage({ inspectionType = 'IT Inspections' }) {
   const { user } = useAuth()
   const [sites, setSites] = useState([])
   const [locations, setLocations] = useState([])
@@ -261,7 +261,7 @@ function InspectionsPage() {
       period,
       site: selectedSiteId,
       location: selectedLocationId,
-      type: 'Server Room',
+      type: inspectionType,
       employee: user.id,
       answers,
       photos: flattenPhotos(answers),
@@ -286,16 +286,16 @@ function InspectionsPage() {
 
   return (
     <section className="space-y-3 sm:space-y-5">
-      <header className="rounded-2xl bg-white px-4 py-4 shadow-soft sm:bg-transparent sm:px-0 sm:py-0 sm:shadow-none">
+      <header className="rounded-2xl border border-white/40 bg-white/30 px-4 py-4 shadow-soft backdrop-blur-xl sm:bg-transparent sm:px-0 sm:py-0 sm:shadow-none sm:backdrop-blur-none sm:border-transparent">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-teal-600">Live Inspection</p>
-        <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">Server Room Inspection</h2>
+        <h2 className="mt-1 text-xl font-bold text-slate-900 sm:text-2xl">{inspectionType}</h2>
         <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
-          Select a site and complete all checks. If you choose Fail, a comment and photo are required.
+          Select a site and complete all checks for this category. If you choose Fail, a comment and photo are required.
         </p>
       </header>
 
-      <form onSubmit={handleSubmit} className="space-y-3 rounded-2xl bg-white p-3 shadow-soft sm:space-y-5 sm:border sm:border-slate-200 sm:p-6">
-        <div className="rounded-2xl bg-slate-50 p-3 sm:bg-transparent sm:p-0">
+      <form onSubmit={handleSubmit} className="space-y-3 rounded-2xl border border-white/45 bg-white/35 p-3 shadow-soft backdrop-blur-xl sm:space-y-5 sm:p-6">
+        <div className="rounded-2xl bg-white/20 p-3 sm:bg-transparent sm:p-0">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">Inspection Setup</span>
             <span className="rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-semibold text-teal-700">{period || 'Out of Window'}</span>
@@ -314,7 +314,7 @@ function InspectionsPage() {
                   setSelectedLocationId('')
                   setLocations([])
                 }}
-                className="min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-teal-500 focus:border-teal-500 focus:ring-2"
+                className="min-h-11 w-full rounded-md border border-white/55 bg-white/60 px-3 py-2 text-sm outline-none ring-teal-500 backdrop-blur-sm focus:border-teal-500 focus:ring-2"
               >
                 <option value="">Select site</option>
                 {sites.map((site) => (
@@ -333,7 +333,7 @@ function InspectionsPage() {
                 id="location"
                 value={selectedLocationId}
                 onChange={(event) => setSelectedLocationId(event.target.value)}
-                className="min-h-11 w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-teal-500 focus:border-teal-500 focus:ring-2"
+                className="min-h-11 w-full rounded-md border border-white/55 bg-white/60 px-3 py-2 text-sm outline-none ring-teal-500 backdrop-blur-sm focus:border-teal-500 focus:ring-2"
                 disabled={!selectedSiteId}
               >
                 <option value="">Select location</option>
@@ -376,7 +376,7 @@ function InspectionsPage() {
 
         <div className="space-y-3 sm:space-y-4">
           {answers.map((answer, index) => (
-            <article key={answer.question} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3 sm:p-4">
+            <article key={answer.question} className="rounded-2xl border border-white/40 bg-white/25 p-3 backdrop-blur-sm sm:p-4">
               {(() => {
                 const resultConfig = getResultConfig(answer)
 
@@ -413,7 +413,7 @@ function InspectionsPage() {
                       <span className="mb-1 block text-xs font-semibold uppercase tracking-[0.15em] text-slate-500">
                         {resultConfig.label}
                       </span>
-                      <div className="grid min-h-11 grid-cols-2 rounded-xl border border-slate-300 bg-white p-1">
+                      <div className="grid min-h-11 grid-cols-2 rounded-xl border border-white/55 bg-white/60 p-1 backdrop-blur-sm">
                         <button
                           type="button"
                           onClick={() => updateAnswer(index, { result: resultConfig.primaryValue })}
@@ -449,7 +449,7 @@ function InspectionsPage() {
                           value={answer.comment}
                           onChange={(event) => updateAnswer(index, { comment: event.target.value })}
                           placeholder="Comment required for Fail"
-                          className="min-h-11 w-full rounded-md border border-rose-300 bg-white px-3 py-2 text-sm outline-none ring-rose-400 focus:border-rose-500 focus:ring-2"
+                          className="min-h-11 w-full rounded-md border border-rose-300 bg-white/70 px-3 py-2 text-sm outline-none ring-rose-400 backdrop-blur-sm focus:border-rose-500 focus:ring-2"
                         />
                       </div>
 
@@ -496,7 +496,7 @@ function InspectionsPage() {
           </p>
         )}
 
-        <div className="sticky bottom-20 rounded-2xl bg-white/95 pt-1 backdrop-blur sm:bottom-3 sm:rounded-lg sm:bg-white/95 sm:pt-1">
+        <div className="sticky bottom-20 rounded-2xl border border-white/40 bg-white/45 pt-1 backdrop-blur-xl sm:bottom-3 sm:rounded-lg sm:bg-white/45 sm:pt-1">
           <button
             type="submit"
             disabled={isSubmitting}

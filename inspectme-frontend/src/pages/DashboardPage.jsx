@@ -153,7 +153,7 @@ function DashboardPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {siteStatusCards.map((card) => (
-          <article key={card.site._id} className="rounded-xl border border-slate-200 bg-white p-4 shadow-soft">
+          <article key={card.site._id} className="rounded-xl border border-white/45 bg-white/35 p-4 shadow-soft backdrop-blur-xl">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{card.site.siteCode}</p>

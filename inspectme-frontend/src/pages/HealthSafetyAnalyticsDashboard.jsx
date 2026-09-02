@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { mockInspections } from './mockData';
 
 // Mock API fetch function - to be replaced with actual API call
@@ -11,6 +12,51 @@ const fetchInspections = async () => {
     }, 500);
   });
 };
+
+const healthSafetyInspections = [
+    {
+        title: 'Fire Extinguisher Check',
+        path: '/inspections/health-safety/fire-fighting-equipment-register'
+    },
+    {
+        title: 'First Aid Box Inspection',
+        path: '/inspections/health-safety/first-aid-box-contents'
+    },
+    {
+        title: 'Forklift Daily Inspection',
+        path: '/inspections/health-safety/vehicles-forklift-daily'
+    }
+];
+
+/* ── Thematic icons for each inspection type ── */
+const inspectionTypeIcons = {
+  'Fire Extinguisher Check': (
+    // Fire / flame icon
+    <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
+    </svg>
+  ),
+  'First Aid Box Inspection': (
+    // Medical cross / heart icon
+    <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  'Forklift Daily Inspection': (
+    // Truck / vehicle icon
+    <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+    </svg>
+  ),
+};
+
+/* Fallback icon for unknown types */
+const DefaultInspectionIcon = () => (
+  <svg className="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15a2.251 2.251 0 012.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75" />
+  </svg>
+);
 
 const HealthSafetyAnalyticsDashboard = () => {
   const [inspections, setInspections] = useState([]);
@@ -50,60 +96,197 @@ const HealthSafetyAnalyticsDashboard = () => {
   }, [filteredInspections]);
 
   if (loading) {
-    return <div className="p-8 text-center">Loading dashboard...</div>;
+    return <div className="p-8 text-center text-gray-700">Loading dashboard...</div>;
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Health & Safety Analytics</h1>
-          <div className="w-64">
-            <label htmlFor="site-code-filter" className="block text-sm font-medium text-gray-700 mb-1">
-              Filter by Site Code
+    <div className="min-h-screen text-gray-900">
+
+      {/* Unified Mobile Top Header */}
+      <header className="w-full flex items-center justify-between px-4 pt-3 pb-4 bg-white/40 backdrop-blur-xl border-b border-white/50 shadow-sm rounded-none mb-3">
+        
+        {/* Left: Logo & Titles */}
+        <div className="flex items-center gap-3">
+          {/* Shield Logo SVG */}
+          <div className="relative flex items-center justify-center w-9 h-11">
+            <svg className="w-full h-full text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+               <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span className="absolute text-teal-600 font-extrabold text-[11px] mt-0.5">IM</span>
+          </div>
+          
+          {/* Text Group */}
+          <div className="flex flex-col">
+            <span className="text-slate-600 font-semibold text-sm leading-tight tracking-wide">InspectMe</span>
+            <span className="text-slate-900 font-bold text-[1.15rem] leading-tight">Analytics Dashboard</span>
+          </div>
+        </div>
+
+        {/* Right: Profile & Logout */}
+        <div className="flex items-center gap-3">
+          
+          {/* User Avatar */}
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center overflow-hidden shadow-sm">
+               <svg className="w-7 h-7 text-slate-600 mt-2" fill="currentColor" viewBox="0 0 24 24">
+                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+               </svg>
+            </div>
+            {/* Online Status Dots */}
+            <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-green-400 border-[1.5px] border-white rounded-full"></span>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-[1.5px] border-white rounded-full"></span>
+          </div>
+          
+          {/* Logout Button */}
+          <button className="flex flex-col items-center justify-center bg-white/70 hover:bg-white/90 border border-white/80 shadow-sm rounded-xl w-11 h-11 transition-colors">
+            <svg className="w-4 h-4 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            <span className="text-[9px] font-bold text-slate-800 mt-0.5">Logout</span>
+          </button>
+
+        </div>
+      </header>
+
+      {/* ── Main Content ── */}
+      <main className="px-4 pb-24 space-y-6 max-w-2xl mx-auto">
+
+        {/* ── Site Filter Card ── */}
+        <div className="bg-white/40 backdrop-blur-xl border border-white/50 rounded-2xl px-4 py-3 shadow-xl">
+          <div className="flex items-center gap-3">
+            <label htmlFor="site-code-filter" className="text-sm font-bold text-slate-900 whitespace-nowrap">
+              Site:
             </label>
             <select
               id="site-code-filter"
               value={selectedSite}
               onChange={(e) => setSelectedSite(e.target.value)}
-              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm"
+              className="flex-1 bg-white/50 backdrop-blur-sm border border-white/40 text-sm text-gray-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 shadow-sm appearance-none"
             >
               {siteCodes.map(code => (
                 <option key={code} value={code}>{code}</option>
               ))}
             </select>
+            {/* Filter Funnel Icon */}
+            <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Compliance Percentage Card */}
-          <div className="bg-white p-6 rounded-lg shadow-md flex flex-col items-center justify-center">
-            <h2 className="text-lg font-semibold text-gray-600 mb-2">Overall Compliance</h2>
-            <p className="text-5xl font-bold text-green-500">{compliancePercentage.toFixed(1)}%</p>
-            <p className="text-sm text-gray-500 mt-2">Based on {filteredInspections.length} inspections</p>
+
+        {/* ── Overall Compliance Card ── */}
+        <div className="w-full bg-white/40 backdrop-blur-xl border border-white/50 p-6 rounded-2xl shadow-xl flex flex-col items-center justify-center">
+          <h2 className="text-lg font-bold text-slate-800 mb-6">Overall Compliance</h2>
+
+          {/* Outer Sunken Track */}
+          <div className="relative w-56 h-56 rounded-full flex items-center justify-center bg-white/20 shadow-[inset_6px_6px_12px_rgba(0,0,0,0.1),_inset_-6px_-6px_12px_rgba(255,255,255,0.7)]">
+            
+            {/* SVG Glowing Gradient Ring */}
+            <svg className="absolute inset-0 w-full h-full" style={{ filter: 'drop-shadow(0px 0px 8px rgba(45,212,191,0.8))' }}>
+              <defs>
+                <linearGradient id="complianceGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#2dd4bf" />
+                  <stop offset="100%" stopColor="#facc15" />
+                </linearGradient>
+              </defs>
+              {/* Background Track */}
+              <circle cx="112" cy="112" r="96" fill="none" className="stroke-white/30" strokeWidth="12" />
+              {/* Foreground Progress */}
+              <circle cx="112" cy="112" r="96" fill="none" stroke="url(#complianceGrad)" strokeWidth="12" strokeLinecap="round" strokeDasharray="603" strokeDashoffset={603 - (603 * Math.min(compliancePercentage, 100)) / 100} className="transition-all duration-1000 ease-out -rotate-90 origin-center" />
+            </svg>
+
+            {/* Inner Raised Plate */}
+            <div className="relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center bg-white/40 backdrop-blur-md border border-white/60 shadow-[6px_6px_12px_rgba(0,0,0,0.1),_-6px_-6px_12px_rgba(255,255,255,1)]">
+              <p className="text-5xl font-extrabold text-teal-900 drop-shadow-[0_0_12px_rgba(255,255,255,0.9)]">
+                {compliancePercentage.toFixed(1)}%
+              </p>
+            </div>
+
           </div>
 
-          {/* Inspection Volume Card */}
-          <div className="bg-white p-6 rounded-lg shadow-md col-span-1 lg:col-span-2">
-            <h2 className="text-lg font-semibold text-gray-600 mb-4">Inspection Volume by Type</h2>
-            <div className="space-y-4">
-              {Object.keys(inspectionVolume).length > 0 ? (
-                Object.entries(inspectionVolume).map(([type, count]) => (
-                  <div key={type} className="flex justify-between items-center">
-                    <p className="text-gray-700">{type}</p>
-                    <p className="font-bold text-gray-800">{count}</p>
+          <div className="text-center mt-6">
+            <p className="text-sm font-bold text-slate-800">Based on {filteredInspections.length} inspections</p>
+            <p className="text-xs text-slate-600 mt-1">Average score: 71% (Past 30 days)</p>
+          </div>
+        </div>
+
+        {/* ── Inspection Launchpad ── */}
+        <div>
+          <h3 className="text-slate-900 font-bold text-lg mb-3 px-1">Launchpad</h3>
+          <div className="grid grid-cols-3 gap-3">
+            <Link to="/inspections/health-safety/fire-fighting-equipment-register" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
+              <svg className="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
+              </svg>
+              <span className="text-xs font-bold text-slate-800 mt-2">Extinguisher</span>
+            </Link>
+            <Link to="/inspections/health-safety/first-aid-box-contents" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
+              <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-xs font-bold text-slate-800 mt-2">First Aid</span>
+            </Link>
+            <Link to="/inspections/health-safety/vehicles-forklift-daily" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
+              <svg className="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+              </svg>
+              <span className="text-xs font-bold text-slate-800 mt-2">Forklift</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* ── Inspection Volume Card ── */}
+        <div className="bg-white/40 backdrop-blur-xl border border-white/50 rounded-2xl shadow-xl overflow-hidden">
+          <div className="px-5 pt-5 pb-3">
+            <h2 className="text-base font-bold text-slate-900">Inspection Volume by Type</h2>
+          </div>
+
+          <div className="divide-y divide-slate-200">
+            {Object.keys(inspectionVolume).length > 0 ? (
+              Object.entries(inspectionVolume).map(([type, count]) => (
+                <button
+                  key={type}
+                  className="w-full flex items-center gap-3 px-5 py-3.5 hover:bg-white/40 active:bg-white/50 transition-colors text-left"
+                >
+                  {/* Thematic Icon */}
+                  <div className="w-10 h-10 rounded-xl bg-white/60 border border-white/50 flex items-center justify-center shrink-0 shadow-sm">
+                    {inspectionTypeIcons[type] || <DefaultInspectionIcon />}
                   </div>
-                ))
-              ) : (
-                <p className="text-gray-500">No inspections found for this site.</p>
-              )}
-            </div>
-            <p className="text-sm text-gray-500 mt-4 pt-4 border-t border-gray-200">
-              Total Inspections: {filteredInspections.length}
+
+                  {/* Title */}
+                  <p className="flex-1 text-sm font-medium text-slate-900 truncate">{type}</p>
+
+                  {/* Count Badge */}
+                  <span className="text-sm font-bold text-slate-900 bg-white/80 border border-white/50 rounded-lg px-2.5 py-0.5 shadow-sm tabular-nums">
+                    {count}
+                  </span>
+
+                  {/* Chevron */}
+                  <svg className="w-4 h-4 text-slate-400 shrink-0 ml-1" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </button>
+              ))
+            ) : (
+              <p className="px-5 py-4 text-sm text-slate-700">No inspections found for this site.</p>
+            )}
+          </div>
+
+          <div className="px-5 py-3 border-t border-slate-200">
+            <p className="text-xs font-medium text-slate-700">
+              Total inspections this period: {filteredInspections.length}
             </p>
           </div>
         </div>
-      </div>
+
+
+
+      </main>
+
     </div>
   );
 };

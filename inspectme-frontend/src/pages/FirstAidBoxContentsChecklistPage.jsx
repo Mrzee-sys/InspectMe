@@ -184,7 +184,7 @@ function FirstAidBoxContentsChecklistPage() {
   }
 
   return (
-    <section className="space-y-4 sm:space-y-5">
+    <section className="space-y-4 sm:space-y-5 px-4 sm:px-6 pb-28">
       <header className="rounded-2xl border border-white/45 bg-white/35 p-5 shadow-soft backdrop-blur-xl sm:p-6">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">Health And Safety Form</p>
         <h2 className="mt-2 text-2xl font-bold text-slate-900">First Aid Box Contents Checklist</h2>

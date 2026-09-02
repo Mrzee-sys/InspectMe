@@ -2,18 +2,6 @@ import { Link } from 'react-router-dom'
 
 const categories = [
   {
-    name: 'IT Inspections',
-    description: 'Server rooms, network cabinets, UPS, and endpoint readiness checks.',
-    to: '/inspections/it',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-7 w-7 stroke-[1.8]" aria-hidden="true">
-        <rect x="3" y="4" width="18" height="12" rx="2" />
-        <path d="M8 20h8" />
-        <path d="M12 16v4" />
-      </svg>
-    ),
-  },
-  {
     name: 'Health And Safety Inspections',
     description: 'PPE, hazard controls, emergency access, and workplace safety checks.',
     to: '/inspections/health-safety',
@@ -50,7 +38,12 @@ function CategoryDashboard() {
         </p>
       </header>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      {/* 
+        Updated Grid: 
+        grid-cols-1 ensures they stack nicely on the Samsung A54.
+        sm:grid-cols-2 ensures they sit side-by-side on larger screens.
+      */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {categories.map((category) => (
           <Link
             key={category.name}

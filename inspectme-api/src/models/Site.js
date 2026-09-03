@@ -5,8 +5,12 @@ const siteSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
       index: true,
+    },
+    region: {
+      type: String,
+      trim: true
     },
     siteCode: {
       type: String,

@@ -17,7 +17,7 @@ function SetPasswordPage() {
   }
 
   if (!user?.mustChangePassword) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/home" replace />
   }
 
   async function handleSubmit(event) {
@@ -45,7 +45,7 @@ function SetPasswordPage() {
     try {
       await changePassword({ currentPassword, newPassword })
       setSuccessMessage('Password updated successfully.')
-      navigate('/dashboard')
+      navigate('/home')
     } catch (error) {
       setErrorMessage(error?.response?.data?.message || 'Unable to update password.')
     } finally {

@@ -1,13 +1,19 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import AppLayout from '../app/AppLayout'
-import CategoryDashboard from '../pages/CategoryDashboard'
+import CategorySel from '../pages/CategorySelPage'
 import LoginPage from '../pages/LoginPage'
 import SettingsPage from '../pages/SettingsPage'
 import DashboardPage from '../pages/DashboardPage'
+import HomePage from '../pages/HomePage'
 import FireFightingEquipmentInspectionRegisterPage from '../pages/FireFightingEquipmentInspectionRegisterPage'
 import FirstAidBoxContentsChecklistPage from '../pages/FirstAidBoxContentsChecklistPage'
 import HealthSafetyAnalyticsDashboard from '../pages/HealthSafetyAnalyticsDashboard'
 import HealthSafetyHistoryPage from '../pages/HealthSafetyHistoryPage'
+import HealthAndWealthPage from '../pages/HealthAndWealthPage'
+import LocationListPage from '../pages/LocationListPage'
+import AtfsPage from '../pages/AtfsPage'
+import DcefPage from '../pages/DcefPage'
+import CsslPage from '../pages/CsslPage'
 import InspectionsPage from '../pages/InspectionsPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import SetPasswordPage from '../pages/SetPasswordPage'
@@ -28,12 +34,20 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           {
+            path: 'home',
+            element: <HomePage />,
+          },
+          {
+            path: 'locations',
+            element: <LocationListPage />,
+          },
+          {
             path: 'set-password',
             element: <SetPasswordPage />,
           },
           {
             path: 'dashboard',
-            element: <CategoryDashboard />,
+            element: <CategorySel />,
           },
           {
             path: 'overview',
@@ -72,8 +86,24 @@ const router = createBrowserRouter([
             element: <FireFightingEquipmentInspectionRegisterPage />,
           },
           {
+            path: 'inspections/health-safety/atfs',
+            element: <AtfsPage />,
+          },
+          {
+            path: 'inspections/health-safety/dcef',
+            element: <DcefPage />,
+          },
+          {
+            path: 'inspections/health-safety/cssl',
+            element: <CsslPage />,
+          },
+          {
             path: 'inspections/risk',
             element: <InspectionsPage inspectionType="Risk Inspections" />,
+          },
+          {
+            path: 'healthandwealth',
+            element: <HealthAndWealthPage />,
           },
         ],
       },

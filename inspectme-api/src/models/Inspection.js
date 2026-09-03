@@ -47,15 +47,15 @@ const inspectionSchema = new mongoose.Schema(
   {
     date: {
       type: String,
-      required: true,
+      required: false,
     },
     time: {
       type: String,
-      required: true,
+      required: false,
     },
     period: {
       type: String,
-      required: true,
+      required: false,
       enum: ["Morning", "Afternoon"],
     },
     site: {
@@ -67,7 +67,7 @@ const inspectionSchema = new mongoose.Schema(
     location: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Location",
-      required: true,
+      required: false,
       index: true,
     },
     type: {
@@ -79,22 +79,25 @@ const inspectionSchema = new mongoose.Schema(
     employee: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
       index: true,
     },
     answers: {
       type: [inspectionAnswerSchema],
-      required: true,
+      required: false,
       default: [],
     },
     photos: {
       type: [String],
       default: [],
     },
+    score: {
+      type: Number,
+    },
     status: {
       type: String,
       required: true,
-      enum: ["Green", "Amber", "Red"],
+      enum: ["Green", "Amber", "Red", "Completed", "Pending", "In Progress"],
       default: "Green",
     },
   },

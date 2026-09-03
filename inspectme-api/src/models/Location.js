@@ -5,7 +5,7 @@ const locationSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
       index: true,
     },
     siteCode: {
@@ -13,6 +13,10 @@ const locationSchema = new mongoose.Schema(
       ref: "Site",
       required: true,
       index: true,
+    },
+    description: {
+      type: String,
+      trim: true,
     },
     locationName: {
       type: String,

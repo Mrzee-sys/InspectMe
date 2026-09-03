@@ -6,7 +6,7 @@ import '@designcodeio/threeui/style.css'
 /* ── Navigation Items ─────────────────────────────────────────── */
 const NAV_ITEMS = [
   {
-    to: '/dashboard',
+    to: '/home',
     label: 'Home',
     svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z" />',
   },
@@ -44,9 +44,6 @@ export default function AnimatedBottomDock() {
   const [mouseX, setMouseX] = useState(null)
   const location = useLocation()
 
-  /* Hide the dock on the login page */
-  if (location.pathname === '/') return null
-
   const handlePointerMove = useCallback((e) => {
     if (!dockRef.current) return
     const rect = dockRef.current.getBoundingClientRect()
@@ -63,46 +60,27 @@ export default function AnimatedBottomDock() {
     setMouseX(e.touches[0].clientX - rect.left)
   }, [])
 
-  return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 sm:hidden">
-      {/* ── ThreeUI Glass Particle Background ─────────────────── */}
-      <div
-        className="pointer-events-none absolute inset-0 overflow-hidden opacity-40"
-        aria-hidden="true"
-        style={{ height: '100%' }}
-      >
-        <AnimatedTopDock
-          variant="glass"
-          className="threeui-dock-bg"
-          particles={16}
-          thickness={0.08}
-          dispersion={0.04}
-          specular={0.7}
-          rim={0.4}
-          drift={0.6}
-        />
-      </div>
+  /* Hide the dock on the login page */
+  if (location.pathname === '/') return null
 
-      {/* ── Navigation Bar ────────────────────────────────────── */}
+  return (
+    <div className="fixed bottom-4 left-4 right-4 z-50 flex justify-center pointer-events-none">
       <nav
         ref={dockRef}
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerLeave}
         onTouchMove={handleTouchMove}
         onTouchEnd={handlePointerLeave}
-        className="relative flex items-end justify-center border-t border-white/50 bg-white/40 shadow-lg backdrop-blur-xl"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 8px)' }}
+        className="w-full max-w-md bg-white/40 backdrop-blur-xl border border-white/50 rounded-3xl shadow-2xl relative flex items-end justify-around px-2 pb-3 pt-2 pointer-events-auto"
       >
-        <div className="flex w-full max-w-md items-end justify-around px-4 pb-2 pt-1">
-          {NAV_ITEMS.map((item) => (
-            <DockItem
-              key={item.to}
-              item={item}
-              mouseX={mouseX}
-              dockRef={dockRef}
-            />
-          ))}
-        </div>
+        {NAV_ITEMS.map((item) => (
+          <DockItem
+            key={item.to}
+            item={item}
+            mouseX={mouseX}
+            dockRef={dockRef}
+          />
+        ))}
       </nav>
     </div>
   )

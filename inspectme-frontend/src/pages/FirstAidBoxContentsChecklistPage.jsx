@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import InspectionHeaderIcon from '../components/InspectionHeaderIcon'
 import { queueInspectionSubmission } from '../offline/syncService'
 import { fetchLocations, fetchSites, submitHealthSafetyInspection } from '../services/inspectionApi'
 import { useAuth } from '../store/authContext'
@@ -185,10 +186,13 @@ function FirstAidBoxContentsChecklistPage() {
 
   return (
     <section className="space-y-4 sm:space-y-5 px-4 sm:px-6 pb-28">
-      <header className="rounded-2xl border border-white/45 bg-white/35 p-5 shadow-soft backdrop-blur-xl sm:p-6">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">Health And Safety Form</p>
-        <h2 className="mt-2 text-2xl font-bold text-slate-900">First Aid Box Contents Checklist</h2>
-        <p className="mt-2 text-sm text-slate-700">Complete box details, mark each required item, and sign at the bottom.</p>
+      <header className="flex items-start gap-4 rounded-2xl border border-white/45 bg-white/35 p-5 shadow-soft backdrop-blur-xl sm:p-6">
+        <InspectionHeaderIcon />
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">Health And Safety Form</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900">First Aid Box Contents Checklist</h2>
+          <p className="mt-1 text-sm text-slate-700">Complete box details, mark each required item, and sign at the bottom.</p>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-white/45 bg-white/35 p-4 shadow-soft backdrop-blur-xl sm:space-y-5 sm:p-6">

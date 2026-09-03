@@ -6,7 +6,9 @@ import App from './App.jsx'
 import { setupOfflineSync } from './offline/syncService'
 import { AuthProvider } from './store/authContext'
 
-registerSW({ immediate: true })
+if (import.meta.env.PROD) {
+  registerSW({ immediate: true })
+}
 setupOfflineSync()
 
 createRoot(document.getElementById('root')).render(

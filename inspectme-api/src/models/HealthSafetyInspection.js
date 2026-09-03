@@ -41,6 +41,9 @@ const healthSafetyInspectionSchema = new mongoose.Schema(
         "FIRST_AID_BOX_CONTENTS_CHECKLIST",
         "VEHICLES_FORKLIFT_DAILY_INSPECTION",
         "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER",
+        "ABLUTION_TOILET_SANITATION",
+        "CHANGE_ROOMS_SECURE_STORAGE",
+        "DINING_CANTEEN_EATING_FACILITIES"
       ],
       index: true,
     },

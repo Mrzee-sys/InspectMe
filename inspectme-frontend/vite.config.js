@@ -1,9 +1,22 @@
-import { defineConfig } from 'vite'
+import { defineConfig, createLogger } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+const logger = createLogger()
+const originalWarn = logger.warn.bind(logger)
+logger.warn = (msg, options) => {
+  if (msg.includes('Gradient has outdated direction syntax')) return
+  originalWarn(msg, options)
+}
+
 // https://vite.dev/config/
 export default defineConfig({
+  customLogger: logger,
+  appType: 'spa', // <--- Ensures all routes fallback to index.html on hard refresh
+  server: {
+    port: 5173,
+    host: true,
+  },
   plugins: [
     react(),
     VitePWA({
@@ -34,6 +47,7 @@ export default defineConfig({
       },
       devOptions: {
         enabled: true,
+        suppressWarnings: true,
       },
     }),
   ],

@@ -18,15 +18,14 @@ function deriveHealthSafetyStatus(inspectionType, formPayload = {}) {
     return hasDefect ? "Amber" : "Green";
   }
 
-  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER") {
+  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" ||
+      inspectionType === "ABLUTION_TOILET_SANITATION" ||
+      inspectionType === "CHANGE_ROOMS_SECURE_STORAGE") {
     const deviations = formPayload.deviations || {};
-    const sectionValues = [
-      ...(Object.values(deviations.fireExtinguishers || {})),
-      ...(Object.values(deviations.hoseReels || {})),
-      ...(Object.values(deviations.hydrants || {})),
-    ];
+    const sectionValues = Object.values(deviations).flatMap(section => Object.values(section || {}));
 
-    const hasDeviation = sectionValues.some((value) => Boolean(String(value || "").trim()));
+    // value is like "Pass", "Fail: ...", or "Not Inspected"
+    const hasDeviation = sectionValues.some((value) => String(value || "").startsWith("Fail"));
     return hasDeviation ? "Amber" : "Green";
   }
 
@@ -91,7 +90,9 @@ function buildHealthSafetyEmailAnswers(inspectionType, formPayload = {}) {
     return [...metadata, ...itemAnswers];
   }
 
-  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER") {
+  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" || 
+      inspectionType === "ABLUTION_TOILET_SANITATION" ||
+      inspectionType === "CHANGE_ROOMS_SECURE_STORAGE") {
     const details = formPayload.details || {};
     const deviations = formPayload.deviations || {};
 
@@ -104,12 +105,13 @@ function buildHealthSafetyEmailAnswers(inspectionType, formPayload = {}) {
     const sectionAnswers = [];
 
     for (const [sectionName, items] of Object.entries(deviations)) {
-      for (const [itemLabel, code] of Object.entries(items || {})) {
-        const hasCode = Boolean(String(code || "").trim());
+      for (const [itemLabel, value] of Object.entries(items || {})) {
+        // value is like "Pass" or "Fail: ..."
+        const isFail = String(value || "").startsWith("Fail");
         sectionAnswers.push({
           question: `${sectionName}: ${itemLabel}`,
-          result: hasCode ? "N/A" : "Pass",
-          comment: hasCode ? `Deviation ${code}` : "",
+          result: isFail ? "N/A" : "Pass",
+          comment: isFail ? value : "",
           photoUrl: "",
         });
       }

@@ -1,50 +1,22 @@
-import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { mockInspections } from './mockData';
-
-// Mock API fetch function - to be replaced with actual API call
-const fetchInspections = async () => {
-  // In a real app, you would fetch this data from an API
-  // For now, we're using mock data after a short delay
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(mockInspections);
-    }, 500);
-  });
-};
-
-const healthSafetyInspections = [
-    {
-        title: 'Fire Extinguisher Check',
-        path: '/inspections/health-safety/fire-fighting-equipment-register'
-    },
-    {
-        title: 'First Aid Box Inspection',
-        path: '/inspections/health-safety/first-aid-box-contents'
-    },
-    {
-        title: 'Forklift Daily Inspection',
-        path: '/inspections/health-safety/vehicles-forklift-daily'
-    }
-];
+import React, { useState, useMemo, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { LayoutGrid, Settings, Database } from 'lucide-react';
+import { fetchSites, fetchHealthSafetyInspections, submitHealthSafetyInspection } from '../services/inspectionApi';
+import { useAuth } from '../store/authContext';
 
 /* ── Thematic icons for each inspection type ── */
 const inspectionTypeIcons = {
-  'Fire Extinguisher Check': (
-    // Fire / flame icon
+  'FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER': (
     <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
     </svg>
   ),
-  'First Aid Box Inspection': (
-    // Medical cross / heart icon
+  'FIRST_AID_BOX_CONTENTS_CHECKLIST': (
     <svg className="w-5 h-5 text-rose-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   ),
-  'Forklift Daily Inspection': (
-    // Truck / vehicle icon
+  'VEHICLES_FORKLIFT_DAILY_INSPECTION': (
     <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
     </svg>
@@ -59,25 +31,66 @@ const DefaultInspectionIcon = () => (
 );
 
 const HealthSafetyAnalyticsDashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { user } = useAuth();
   const [inspections, setInspections] = useState([]);
-  const [selectedSite, setSelectedSite] = useState('All');
+  const [sites, setSites] = useState([]);
+  const [selectedSite, setSelectedSite] = useState(location.state?.siteId || 'All');
   const [loading, setLoading] = useState(true);
+  const [isSeeding, setIsSeeding] = useState(false);
 
-  // In a real app, you would use useEffect to fetch data on component mount
-  React.useEffect(() => {
-    fetchInspections().then(data => {
-      setInspections(data);
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [siteData, inspectionData] = await Promise.all([
+        fetchSites(),
+        fetchHealthSafetyInspections()
+      ]);
+      setSites(siteData);
+      setInspections(inspectionData);
+    } catch (err) {
+      console.error('Error fetching data in Analytics', err);
+    } finally {
       setLoading(false);
-    });
+    }
+  };
+
+  useEffect(() => {
+    loadData();
   }, []);
 
-  const siteCodes = useMemo(() => ['All', ...new Set(inspections.map(i => i.siteCode))], [inspections]);
+  const handleSeedData = async () => {
+    if (!sites.length) return alert('No sites found! Please create a site first.');
+    setIsSeeding(true);
+    try {
+      const siteId = sites[0]._id;
+      const dummyRecords = [
+        { date: '2026-09-03', time: '10:00', period: 'Morning', site: siteId, location: siteId, employee: user?._id || siteId, inspectionType: 'FIRST_AID_BOX_CONTENTS_CHECKLIST', status: 'Green', formPayload: {} },
+        { date: '2026-09-03', time: '11:00', period: 'Morning', site: siteId, location: siteId, employee: user?._id || siteId, inspectionType: 'FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER', status: 'Red', formPayload: {} },
+        { date: '2026-09-03', time: '14:00', period: 'Afternoon', site: siteId, location: siteId, employee: user?._id || siteId, inspectionType: 'VEHICLES_FORKLIFT_DAILY_INSPECTION', status: 'Green', formPayload: {} },
+      ];
+      for (const record of dummyRecords) {
+        await submitHealthSafetyInspection(record);
+      }
+      alert('Data seeded successfully!');
+      loadData();
+    } catch (err) {
+      console.error('Failed to seed', err);
+      alert('Failed to seed data. Check console.');
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   const filteredInspections = useMemo(() => {
     if (selectedSite === 'All') {
       return inspections;
     }
-    return inspections.filter(i => i.siteCode === selectedSite);
+    return inspections.filter(i => {
+      const siteId = typeof i.site === 'object' ? i.site._id : i.site;
+      return siteId === selectedSite;
+    });
   }, [inspections, selectedSite]);
 
   const inspectionVolume = useMemo(() => {
@@ -113,6 +126,34 @@ const HealthSafetyAnalyticsDashboard = () => {
                <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <span className="absolute text-teal-600 font-extrabold text-[11px] mt-0.5">IM</span>
+          </div>
+          
+          {/* Text Group */}
+          <div className="flex flex-col">
+            <h1 className="text-sm font-extrabold text-slate-900 leading-tight">Health & Safety</h1>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Analytics</p>
+          </div>
+        </div>
+
+        {/* Right: User / Logout */}
+        <div className="flex items-center gap-2">
+          
+          <button 
+            onClick={handleSeedData}
+            disabled={isSeeding}
+            className="flex flex-col items-center justify-center bg-teal-500 hover:bg-teal-600 text-white shadow-sm rounded-xl px-3 h-11 transition-colors disabled:opacity-50"
+          >
+            <Database className="w-4 h-4 mb-0.5" />
+            <span className="text-[9px] font-bold uppercase">{isSeeding ? 'Seeding...' : 'Seed'}</span>
+          </button>
+
+          <div className="relative">
+            <div className="w-11 h-11 rounded-xl bg-teal-100 border border-white/80 shadow-sm flex items-center justify-center text-teal-700">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-[1.5px] border-white rounded-full"></span>
           </div>
           
           {/* Text Group */}
@@ -163,8 +204,9 @@ const HealthSafetyAnalyticsDashboard = () => {
               onChange={(e) => setSelectedSite(e.target.value)}
               className="flex-1 bg-white/50 backdrop-blur-sm border border-white/40 text-sm text-gray-900 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 shadow-sm appearance-none"
             >
-              {siteCodes.map(code => (
-                <option key={code} value={code}>{code}</option>
+              <option value="All">All</option>
+              {sites.map(site => (
+                <option key={site._id} value={site._id}>{site.siteCode}</option>
               ))}
             </select>
             {/* Filter Funnel Icon */}
@@ -211,31 +253,22 @@ const HealthSafetyAnalyticsDashboard = () => {
             <p className="text-sm font-bold text-slate-800">Based on {filteredInspections.length} inspections</p>
             <p className="text-xs text-slate-600 mt-1">Average score: 71% (Past 30 days)</p>
           </div>
-        </div>
 
-        {/* ── Inspection Launchpad ── */}
-        <div>
-          <h3 className="text-slate-900 font-bold text-lg mb-3 px-1">Launchpad</h3>
-          <div className="grid grid-cols-3 gap-3">
-            <Link to="/inspections/health-safety/fire-fighting-equipment-register" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
-              <svg className="w-8 h-8 text-orange-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z" />
-              </svg>
-              <span className="text-xs font-bold text-slate-800 mt-2">Extinguisher</span>
-            </Link>
-            <Link to="/inspections/health-safety/first-aid-box-contents" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
-              <svg className="w-8 h-8 text-rose-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-xs font-bold text-slate-800 mt-2">First Aid</span>
-            </Link>
-            <Link to="/inspections/health-safety/vehicles-forklift-daily" className="flex flex-col items-center justify-center py-4 px-2 bg-white/30 backdrop-blur-xl border border-white/50 rounded-2xl shadow-sm active:bg-white/50 transition-all">
-              <svg className="w-8 h-8 text-indigo-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-              </svg>
-              <span className="text-xs font-bold text-slate-800 mt-2">Forklift</span>
-            </Link>
+          <div className="grid grid-cols-2 gap-3 w-full mt-6 pt-4 border-t border-white/40">
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20 text-teal-700 font-semibold text-xs transition-all shadow-sm"
+            >
+              <LayoutGrid className="w-4 h-4" />
+              Categories
+            </button>
+            <button
+              onClick={() => navigate('/settings')}
+              className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white/40 hover:bg-white/60 border border-white/60 text-slate-700 font-semibold text-xs transition-all shadow-sm"
+            >
+              <Settings className="w-4 h-4 text-slate-500" />
+              Settings
+            </button>
           </div>
         </div>
 
@@ -282,8 +315,6 @@ const HealthSafetyAnalyticsDashboard = () => {
             </p>
           </div>
         </div>
-
-
 
       </main>
 

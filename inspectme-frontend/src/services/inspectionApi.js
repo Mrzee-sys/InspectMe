@@ -1,5 +1,20 @@
 import { apiClient } from './apiClient'
 
+apiClient.interceptors.request.use((config) => {
+  try {
+    const storedAuth = localStorage.getItem('inspectme-auth')
+    const token = storedAuth ? JSON.parse(storedAuth).token : null
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+  } catch {
+    // Requests can continue without a token when storage is unavailable or malformed.
+  }
+
+  return config
+})
+
 export async function fetchSites() {
   const response = await apiClient.get('/sites')
   return response.data

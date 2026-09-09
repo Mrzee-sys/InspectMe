@@ -14,6 +14,16 @@ import LocationListPage from '../pages/LocationListPage'
 import AtfsPage from '../pages/AtfsPage'
 import DcefPage from '../pages/DcefPage'
 import CsslPage from '../pages/CsslPage'
+import AqtPage from '../pages/AqtPage'
+import LewdPage from '../pages/LewdPage'
+import ChswsPage from '../pages/ChswsPage'
+import EmxPage from '../pages/EmxPage'
+import FireAndLifeSafetyPage from '../pages/FireAndLifeSafetyPage'
+import FleetMobilePage from '../pages/FleetMobilePage'
+import EarthmovingPage from '../pages/EarthmovingPage'
+import DumpTrucksPage from '../pages/DumpTrucksPage'
+import MobileCranesPage from '../pages/MobileCranesPage'
+import ElevatingPlatformsPage from '../pages/ElevatingPlatformsPage'
 import InspectionsPage from '../pages/InspectionsPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import SetPasswordPage from '../pages/SetPasswordPage'
@@ -98,12 +108,52 @@ const router = createBrowserRouter([
             element: <CsslPage />,
           },
           {
+            path: 'inspections/health-safety/aqt',
+            element: <AqtPage />,
+          },
+          {
+            path: 'inspections/health-safety/lewd',
+            element: <LewdPage />,
+          },
+          {
+            path: 'inspections/health-safety/chsws',
+            element: <ChswsPage />,
+          },
+          {
+            path: 'inspections/health-safety/emx',
+            element: <EmxPage />,
+          },
+          {
+            path: 'inspections/health-safety/earthmoving',
+            element: <EarthmovingPage />,
+          },
+          {
+            path: 'inspections/health-safety/dump-trucks',
+            element: <DumpTrucksPage />,
+          },
+          {
+            path: 'inspections/health-safety/mobile-cranes',
+            element: <MobileCranesPage />,
+          },
+          {
+            path: 'inspections/health-safety/elevating-platforms',
+            element: <ElevatingPlatformsPage />,
+          },
+          {
             path: 'inspections/risk',
             element: <InspectionsPage inspectionType="Risk Inspections" />,
           },
           {
             path: 'healthandwealth',
             element: <HealthAndWealthPage />,
+          },
+          {
+            path: 'fireandlife',
+            element: <FireAndLifeSafetyPage />,
+          },
+          {
+            path: 'fleetandmobile',
+            element: <FleetMobilePage />,
           },
         ],
       },

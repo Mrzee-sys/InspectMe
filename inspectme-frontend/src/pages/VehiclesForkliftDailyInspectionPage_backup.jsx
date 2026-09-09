@@ -9,16 +9,6 @@ import { derivePeriodFromTime, todayAsIsoDate } from '../utils/inspectionTime'
 
 
 
-const FORKLIFT_CODES = [
-  { value: '', label: 'Select deviation reason' },
-  { value: 'damaged', label: 'Damaged / Broken' },
-  { value: 'missing', label: 'Missing' },
-  { value: 'worn', label: 'Worn Out' },
-  { value: 'leaking', label: 'Leaking' },
-  { value: 'loose', label: 'Loose / Unsecured' },
-  { value: 'not_working', label: 'Not Working' },
-]
-
 const FORKLIFT_ITEMS = [
   { key: 'lubricationAdequate', label: 'Lubrication adequate' },
   { key: 'switchesGaugesBrakes', label: 'Switches, Gauges, and Brakes in good working order' },
@@ -148,26 +138,6 @@ function VehiclesForkliftDailyInspectionPage() {
     return errors
   }
 
-  const sectionToLabels = (items, sectionValues, optionsMap) =>
-    items.reduce((accumulator, item) => {
-      const itemState = sectionValues[item.key]
-      if (itemState.status === 'pass') {
-        accumulator[item.label] = 'Pass'
-      } else if (itemState.status === 'fail') {
-        if (itemState.issues.length === 0) {
-          accumulator[item.label] = 'Fail (No specific reason selected)'
-        } else {
-          const issueLabels = itemState.issues.map(val => 
-            optionsMap.find(opt => opt.value === val)?.label || val
-          )
-          accumulator[item.label] = "Fail: $({issueLabels.join(', ')}"
-        }
-      } else {
-        accumulator[item.label] = 'Not Inspected'
-      }
-      return accumulator
-    }, {})
-
   async function handleSubmit(event) {
     event.preventDefault()
     setSuccessMessage('')
@@ -221,14 +191,10 @@ function VehiclesForkliftDailyInspectionPage() {
             timeIn: formData.timeIn,
           },
           itemStatus: Object.keys(deviations.forklift).reduce((acc, key) => {
-            const item = FORKLIFT_ITEMS.find(i => i.key === key);
             const status = deviations.forklift[key].status;
-            acc[key] = status === 'pass' ? 'OK' : status === 'fail' ? 'DEF' : '';
+            acc[key] = status === 'pass' ? 'OK' : status === 'fail' ? 'DEF' : status === 'na' ? 'N/A' : '';
             return acc;
           }, {}),
-          deviations: {
-            forklift: sectionToLabels(FORKLIFT_ITEMS, deviations.forklift, FORKLIFT_CODES),
-          }
         },
       }
 
@@ -278,14 +244,14 @@ function VehiclesForkliftDailyInspectionPage() {
                     onClick={() => handleStatusChange(sectionKey, item.key, 'pass')}
                     className={"rounded-full px-3 py-1 text-[11px] font-bold transition-all " + (itemState.status === 'pass' ? 'bg-emerald-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-800')}
                   >
-                    Pass
+                    OK
                   </button>
                   <button
                     type="button"
                     onClick={() => handleStatusChange(sectionKey, item.key, 'fail')}
                     className={"rounded-full px-3 py-1 text-[11px] font-bold transition-all " + (itemState.status === 'fail' ? 'bg-rose-500 text-white shadow-sm' : 'text-slate-600 hover:text-slate-800')}
                   >
-                    Fail
+                    DEF
                   </button>
                 </div>
 
@@ -420,7 +386,7 @@ function VehiclesForkliftDailyInspectionPage() {
             </div>
           </div>
         <div className="px-4 w-full">
-{renderSection('forklift', 'Vehicles / Forklift Daily Inspection', FORKLIFT_ITEMS, FORKLIFT_CODES)}
+{renderSection('forklift', 'Vehicles / Forklift Daily Inspection', FORKLIFT_ITEMS, [])}
 
         {errorMessages.length > 0 && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
@@ -439,7 +405,7 @@ function VehiclesForkliftDailyInspectionPage() {
         >
           {isSubmitting ? 'Saving...' : 'Save Register'}
         </button>
-      </div></form>
+      </form>
 
       <Link
         to="/healthandwealth"
@@ -452,7 +418,6 @@ function VehiclesForkliftDailyInspectionPage() {
 }
 
 export default VehiclesForkliftDailyInspectionPage
-
 
 
 

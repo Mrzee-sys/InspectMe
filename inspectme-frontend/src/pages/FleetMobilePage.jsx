@@ -1,55 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, Droplets, Shirt, Coffee, Wind, Lightbulb, Sparkles } from 'lucide-react';
+import { Tractor, Truck, Construction, ArrowUpSquare, Car } from 'lucide-react';
 
-const healthInspections = [
+const fleetInspections = [
   {
-    name: 'First Aid & Emergency',
-    to: '/inspections/health-safety/first-aid-box-contents',
-    icon: <Activity className="w-8 h-8 text-rose-500" />,
-    bg: 'bg-rose-50 border-rose-100',
-  },
-  {
-    name: 'Ablution & Sanitation',
-    to: '/inspections/health-safety/atfs',
-    icon: <Droplets className="w-8 h-8 text-blue-500" />,
+    name: 'Vehicles & Forklifts',
+    to: '/inspections/health-safety/vehicles-forklift-daily',
+    icon: <Car className="w-8 h-8 text-blue-500" />,
     bg: 'bg-blue-50 border-blue-100',
   },
   {
-    name: 'Change Rooms & Lockers',
-    to: '/inspections/health-safety/cssl',
-    icon: <Shirt className="w-8 h-8 text-amber-500" />,
+    name: 'Earthmoving (TLBs)',
+    to: '/inspections/health-safety/earthmoving',
+    icon: <Tractor className="w-8 h-8 text-amber-500" />,
     bg: 'bg-amber-50 border-amber-100',
   },
   {
-    name: 'Canteens & Dining',
-    to: '/inspections/health-safety/dcef',
-    icon: <Coffee className="w-8 h-8 text-orange-500" />,
+    name: 'Dump Trucks (ADTs)',
+    to: '/inspections/health-safety/dump-trucks',
+    icon: <Truck className="w-8 h-8 text-slate-500" />,
+    bg: 'bg-slate-50 border-slate-100',
+  },
+  {
+    name: 'Mobile Cranes',
+    to: '/inspections/health-safety/mobile-cranes',
+    icon: <Construction className="w-8 h-8 text-orange-500" />,
     bg: 'bg-orange-50 border-orange-100',
   },
   {
-    name: 'Air Quality & Temp',
-    to: '/inspections/health-safety/aqt',
-    icon: <Wind className="w-8 h-8 text-teal-500" />,
-    bg: 'bg-teal-50 border-teal-100',
-  },
-  {
-    name: 'Lighting & Ergonomics',
-    to: '/inspections/health-safety/lewd',
-    icon: <Lightbulb className="w-8 h-8 text-yellow-500" />,
-    bg: 'bg-yellow-50 border-yellow-100',
-  },
-  {
-    name: 'Clean Housekeeping',
-    to: '/inspections/health-safety/chsws',
-    icon: <Sparkles className="w-8 h-8 text-purple-500" />,
-    bg: 'bg-purple-50 border-purple-100',
+    name: 'Elevating Platforms',
+    to: '/inspections/health-safety/elevating-platforms',
+    icon: <ArrowUpSquare className="w-8 h-8 text-indigo-500" />,
+    bg: 'bg-indigo-50 border-indigo-100',
   }
 ];
 
-export default function HealthAndWealthPage() {
+export default function FleetMobilePage() {
   return (
-    <div className="min-h-screen text-gray-900">
+    <div className="min-h-screen text-gray-900 ">
       {/* Unified Mobile Top Header */}
       <header className="w-full flex items-center justify-between px-4 pt-3 pb-4 bg-white/40 backdrop-blur-xl border-b border-white/50 shadow-sm rounded-none mb-3">
         <div className="flex items-center gap-3">
@@ -57,11 +45,11 @@ export default function HealthAndWealthPage() {
             <svg className="w-full h-full text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <span className="absolute text-teal-600 font-extrabold text-[11px] mt-0.5">IM</span>
+            <span className="absolute text-blue-600 font-extrabold text-[11px] mt-0.5">IM</span>
           </div>
           <div className="flex flex-col">
             <span className="text-slate-600 font-semibold text-sm leading-tight tracking-wide">InspectMe</span>
-            <span className="text-slate-900 font-bold text-[1.15rem] leading-tight">Health & Welfare</span>
+            <span className="text-slate-900 font-bold text-[1.15rem] leading-tight">Fleet & Mobile</span>
           </div>
         </div>
 
@@ -88,7 +76,7 @@ export default function HealthAndWealthPage() {
         <div className="pt-2">
           <h3 className="text-white drop-shadow-md font-bold text-lg mb-3 px-1">Inspections</h3>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            {healthInspections.map((item) => (
+            {fleetInspections.map((item) => (
               <Link 
                 key={item.name}
                 to={item.to} 
@@ -103,7 +91,15 @@ export default function HealthAndWealthPage() {
           </div>
         </div>
       </main>
+      
+      <div className="fixed bottom-24 w-full flex justify-center z-40 pointer-events-none">
+          <Link
+            to="/categories"
+            className="pointer-events-auto inline-flex w-[calc(100%-2rem)] max-w-2xl justify-center rounded-md bg-slate-800 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-900 shadow-lg"
+          >
+            Back To Categories
+          </Link>
+      </div>
     </div>
   );
 }
-

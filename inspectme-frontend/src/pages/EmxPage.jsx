@@ -7,37 +7,40 @@ import { useAuth } from '../store/authContext'
 import { useSite } from '../store/siteContext'
 import { derivePeriodFromTime, todayAsIsoDate } from '../utils/inspectionTime'
 
-
-
-const FORKLIFT_CODES = [
-  { value: '', label: 'Select deviation reason' },
-  { value: 'damaged', label: 'Damaged / Broken' },
-  { value: 'missing', label: 'Missing' },
-  { value: 'worn', label: 'Worn Out' },
-  { value: 'leaking', label: 'Leaking' },
-  { value: 'loose', label: 'Loose / Unsecured' },
-  { value: 'not_working', label: 'Not Working' },
+const EMX_CODES = [
+  { value: '', label: 'Select code (no deviation if blank)' },
+  { value: 'EMX1', label: 'EMX1 - Obstructed exit doors' },
+  { value: 'EMX2', label: 'EMX2 - Doors do not open outwards' },
+  { value: 'EMX3', label: 'EMX3 - Missing/faulty panic hardware' },
+  { value: 'EMX4', label: 'EMX4 - Combustible materials in escape routes' },
+  { value: 'EMX5', label: 'EMX5 - Non-compliant signage' },
+  { value: 'EMX6', label: 'EMX6 - Signage not illuminated/visible' },
+  { value: 'EMX7', label: 'EMX7 - Backup lighting failed' },
+  { value: 'EMX8', label: 'EMX8 - Assembly point issues' },
+  { value: 'EMX9', label: 'EMX9 - Other' },
 ]
 
-const FORKLIFT_ITEMS = [
-  { key: 'lubricationAdequate', label: 'Lubrication adequate' },
-  { key: 'switchesGaugesBrakes', label: 'Switches, Gauges, and Brakes in good working order' },
-  { key: 'hoistingAndHorn', label: 'Hoisting mechanisms and Horn in good working order' },
-  { key: 'lights', label: 'Lights in good working order' },
-  { key: 'pedalsRimsTyresPipes', label: 'Pedal rubbers, Wheel rims and tyres, and All pipes in good condition' },
-  { key: 'wheelNutsAndBolts', label: 'Wheel nuts and bolts secure' },
-  { key: 'oilCoolantLevelsAndLeaks', label: 'Oil and coolant levels and leaks' },
-  { key: 'fanbeltsConditionTension', label: 'Fanbelt/s in good condition and correct tension' },
-  { key: 'capsAndBatteryMounting', label: 'Caps (i.e. oil, petrol, etc.) and Battery mounting secure' },
-  { key: 'controlLevers', label: 'Control levers in good working order' },
-  { key: 'compartmentSeatBelt', label: 'Compartment/seat and Safety belt in good condition' },
-  { key: 'hydraulicOilLevel', label: 'Hydraulic oil level correct' },
-  { key: 'gasShutOffAndHose', label: 'Gas shut-off valve operational/hose not damaged' },
-  { key: 'gasTankMountings', label: 'Gas tank mountings secure' },
-  { key: 'reverseSirenAndBeacon', label: 'Reverse siren and Beacon or strobe warning light' }
+const EMX_ITEMS = [
+  { key: 'emx01', label: 'Are all designated emergency exit doors completely unobstructed on both sides?' },
+  { key: 'emx02', label: 'Do all emergency exit doors open outwards in the direction of the escape route?' },
+  { key: 'emx03', label: 'Are exit doors fitted with panic hardware that does not require a key to open from the inside?' },
+  { key: 'emx04', label: 'Are all escape routes entirely free of combustible materials or temporary storage?' },
+  { key: 'emx05', label: 'Are emergency exit signs strictly compliant with SANS 1186 (correct green/white symbolic safety signs)?' },
+  { key: 'emx06', label: 'Is the emergency exit signage continuously illuminated and clearly visible from anywhere within the escape path?' },
+  { key: 'emx07', label: 'Are backup emergency lighting systems functional and tested to operate during load shedding or power failures?' },
+  { key: 'emx08', label: 'Are designated outdoor emergency assembly points clearly marked and safely accessible?' },
 ]
 
-const ITEM_METADATA = {};
+const ITEM_METADATA = {
+  emx01: { label: 'Unobstructed Doors', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />' },
+  emx02: { label: 'Open Outwards', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />' },
+  emx03: { label: 'Panic Hardware', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />' },
+  emx04: { label: 'Clear Routes', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />' },
+  emx05: { label: 'SANS 1186 Signs', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />' },
+  emx06: { label: 'Illuminated Signs', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />' },
+  emx07: { label: 'Backup Lighting', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />' },
+  emx08: { label: 'Assembly Points', svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />' },
+};
 
 function buildInitialDeviationState(items) {
   return items.reduce((accumulator, item) => {
@@ -46,7 +49,7 @@ function buildInitialDeviationState(items) {
   }, {})
 }
 
-function VehiclesForkliftDailyInspectionPage() {
+function EmxPage() {
   const { user } = useAuth()
   const { selectedSiteId, selectSite } = useSite()
   const [sites, setSites] = useState([])
@@ -56,13 +59,13 @@ function VehiclesForkliftDailyInspectionPage() {
   const [time, setTime] = useState('06:00')
 
   const [formData, setFormData] = useState({
-    regNo: '',    dateFrom: '',    dateTo: '',    driver: '',    timeOut: '',    timeIn: '',
-
-
+    area: '',
+    inspector: '',
+    year: String(new Date().getFullYear()),
   })
   
   const [deviations, setDeviations] = useState({
-    forklift: buildInitialDeviationState(FORKLIFT_ITEMS),
+    emx: buildInitialDeviationState(EMX_ITEMS),
   })
   
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -142,31 +145,11 @@ function VehiclesForkliftDailyInspectionPage() {
     if (!selectedLocationId) errors.push('Please select a location.')
     if (!time) errors.push('Please provide inspection time.')
     if (!period) errors.push('Time must be between 06:00 and 18:00 local time.')
-    if (!formData.regNo.trim()) errors.push('REG. No is required.')
-    
-    
+    if (!formData.area.trim()) errors.push('AREA is required.')
+    if (!formData.inspector.trim()) errors.push('INSPECTOR is required.')
+    if (!formData.year.trim()) errors.push('YEAR is required.')
     return errors
   }
-
-  const sectionToLabels = (items, sectionValues, optionsMap) =>
-    items.reduce((accumulator, item) => {
-      const itemState = sectionValues[item.key]
-      if (itemState.status === 'pass') {
-        accumulator[item.label] = 'Pass'
-      } else if (itemState.status === 'fail') {
-        if (itemState.issues.length === 0) {
-          accumulator[item.label] = 'Fail (No specific reason selected)'
-        } else {
-          const issueLabels = itemState.issues.map(val => 
-            optionsMap.find(opt => opt.value === val)?.label || val
-          )
-          accumulator[item.label] = "Fail: $({issueLabels.join(', ')}"
-        }
-      } else {
-        accumulator[item.label] = 'Not Inspected'
-      }
-      return accumulator
-    }, {})
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -186,8 +169,6 @@ function VehiclesForkliftDailyInspectionPage() {
         const itemState = sectionValues[item.key]
         if (itemState.status === 'pass') {
           accumulator[item.label] = 'Pass'
-        } else if (itemState.status === 'na') {
-          accumulator[item.label] = 'N/A'
         } else if (itemState.status === 'fail') {
           if (itemState.issues.length === 0) {
             accumulator[item.label] = 'Fail (No specific reason selected)'
@@ -210,25 +191,16 @@ function VehiclesForkliftDailyInspectionPage() {
         site: selectedSiteId,
         location: selectedLocationId,
         employee: user.id,
-        inspectionType: 'VEHICLES_FORKLIFT_DAILY_INSPECTION', // Matches naming convention
-                formPayload: {
+        inspectionType: 'EMERGENCY_EXITS', // Matches naming convention
+        formPayload: {
           details: {
-            regNo: formData.regNo,
-            dateFrom: formData.dateFrom,
-            dateTo: formData.dateTo,
-            driver: formData.driver,
-            timeOut: formData.timeOut,
-            timeIn: formData.timeIn,
+            area: formData.area,
+            inspector: formData.inspector,
+            year: formData.year,
           },
-          itemStatus: Object.keys(deviations.forklift).reduce((acc, key) => {
-            const item = FORKLIFT_ITEMS.find(i => i.key === key);
-            const status = deviations.forklift[key].status;
-            acc[key] = status === 'pass' ? 'OK' : status === 'fail' ? 'DEF' : '';
-            return acc;
-          }, {}),
           deviations: {
-            forklift: sectionToLabels(FORKLIFT_ITEMS, deviations.forklift, FORKLIFT_CODES),
-          }
+            emx: sectionToLabels(EMX_ITEMS, deviations.emx, EMX_CODES),
+          },
         },
       }
 
@@ -289,7 +261,7 @@ function VehiclesForkliftDailyInspectionPage() {
                   </button>
                 </div>
 
-                {false && (
+                {itemState.status === 'fail' && (
                   <div className="mt-1 w-full animate-in fade-in slide-in-from-top-2 border-t border-slate-200/60 pt-3">
                     <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500 text-center">
                       Select deviations:
@@ -327,7 +299,7 @@ function VehiclesForkliftDailyInspectionPage() {
           <InspectionHeaderIcon />
           <div className="flex flex-col">
             <span className="text-slate-600 font-semibold text-xs leading-tight tracking-wide uppercase">Health & Safety</span>
-            <span className="text-slate-900 font-bold text-base leading-tight">Vehicles / Forklift Daily Inspection</span>
+            <span className="text-slate-900 font-bold text-base leading-tight">Emergency Exits</span>
           </div>
         </div>
 
@@ -350,77 +322,108 @@ function VehiclesForkliftDailyInspectionPage() {
           </button>
         </div>
       </header>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 w-full">
-          <div className="rounded-3xl border border-white/40 bg-white/30 p-5 shadow-sm backdrop-blur-md mb-5 mx-4">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="site" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">SITE</label>
-                <select id="site" value={selectedSiteId} onChange={(event) => { selectSite(event.target.value); setSelectedLocationId(''); setLocations([]) }} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500">
-                  <option value="">Select site</option>
-                  {sites.map((site) => (<option key={site._id} value={site._id}>{site.siteCode} - {site.siteName}</option>))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="location" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">LOCATION</label>
-                <select id="location" value={selectedLocationId} onChange={(event) => setSelectedLocationId(event.target.value)} disabled={!selectedSiteId} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500 disabled:opacity-50">
-                  <option value="">Select location</option>
-                  {locations.map((loc) => (<option key={loc._id} value={loc._id}>{loc.name}</option>))}
-                </select>
-              </div>
+
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5 px-4 w-full">
+        <div className="rounded-3xl border border-white/40 bg-white/30 p-5 shadow-sm backdrop-blur-md mb-5">
+          <div className="grid grid-cols-2 gap-4 mb-6">
+            <div>
+              <label htmlFor="site" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">Site</label>
+              <select
+                id="site"
+                value={selectedSiteId}
+                onChange={(event) => {
+                  selectSite(event.target.value)
+                  setSelectedLocationId('')
+                  setLocations([])
+                }}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="">Select site</option>
+                {sites.map((site) => (
+                  <option key={site._id} value={site._id}>
+                    {site.siteCode} - {site.siteName}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="date" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">DATE</label>
-                <input id="date" type="date" value={date} onChange={(event) => setDate(event.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label htmlFor="time" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">TIME</label>
-                <input id="time" type="time" value={time} onChange={(event) => setTime(event.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-                <p className="mt-1 text-[10px] text-slate-500 ml-1">Detected: {period || 'Invalid'}</p>
-              </div>
+            <div>
+              <label htmlFor="siteLocation" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">Location</label>
+              <select
+                id="siteLocation"
+                value={selectedLocationId}
+                onChange={(event) => setSelectedLocationId(event.target.value)}
+                disabled={!selectedSiteId}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              >
+                <option value="">Select location</option>
+                {locations.map((location) => (
+                  <option key={location._id} value={location._id}>
+                    {location.locationName}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="regNo" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">REG. NO</label>
-                <input type="text" id="regNo" value={formData.regNo || ''} onChange={(e) => updateField('regNo', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label htmlFor="driver" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">DRIVER</label>
-                <input type="text" id="driver" value={formData.driver || ''} onChange={(e) => updateField('driver', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
+            <div>
+              <label htmlFor="date" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">Date</label>
+              <input
+                id="date"
+                type="date"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="dateFrom" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">DATE FROM</label>
-                <input type="date" id="dateFrom" value={formData.dateFrom || ''} onChange={(e) => updateField('dateFrom', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label htmlFor="dateTo" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">DATE TO</label>
-                <input type="date" id="dateTo" value={formData.dateTo || ''} onChange={(e) => updateField('dateTo', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
+            <div>
+              <label htmlFor="time" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">Time</label>
+              <input
+                id="time"
+                type="time"
+                value={time}
+                onChange={(event) => setTime(event.target.value)}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
+              <p className="mt-1 text-xs text-slate-500 ml-1">Detected period: {period || 'Invalid time window'}</p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label htmlFor="timeOut" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">TIME OUT</label>
-                <input type="time" id="timeOut" value={formData.timeOut || ''} onChange={(e) => updateField('timeOut', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
-              <div>
-                <label htmlFor="timeIn" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">TIME IN</label>
-                <input type="time" id="timeIn" value={formData.timeIn || ''} onChange={(e) => updateField('timeIn', e.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
-              </div>
+            <div>
+              <label htmlFor="area" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">AREA</label>
+              <input
+                id="area"
+                type="text"
+                value={formData.area}
+                onChange={(event) => updateField('area', event.target.value)}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
 
-            <div className="mb-2">
-              <label htmlFor="inspector" className="mb-1.5 block text-xs font-semibold text-slate-700 ml-1">INSPECTOR</label>
-              <input type="text" id="inspector" value={formData.inspector || ''} onChange={(event) => updateField('inspector', event.target.value)} className="w-full rounded-full border-none bg-white/40 px-3 py-2 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500" />
+            <div>
+              <label htmlFor="year" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">YEAR</label>
+              <input
+                id="year"
+                type="text"
+                value={formData.year}
+                onChange={(event) => updateField('year', event.target.value)}
+                className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+              />
             </div>
           </div>
-        <div className="px-4 w-full">
-{renderSection('forklift', 'Vehicles / Forklift Daily Inspection', FORKLIFT_ITEMS, FORKLIFT_CODES)}
+
+          <div className="mb-6">
+            <label htmlFor="inspector" className="mb-1.5 block text-sm font-semibold text-slate-700 ml-1">INSPECTOR</label>
+            <input
+              id="inspector"
+              type="text"
+              value={formData.inspector}
+              onChange={(event) => updateField('inspector', event.target.value)}
+              className="w-full rounded-full border-none bg-white/40 px-4 py-2.5 text-sm text-slate-800 shadow-[inset_3px_3px_6px_rgba(0,0,0,0.12),_inset_-3px_-3px_6px_rgba(255,255,255,0.9)] backdrop-blur-sm outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+        </div>
+
+        {renderSection('emx', 'Emergency Exits', EMX_ITEMS, EMX_CODES)}
 
         {errorMessages.length > 0 && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
@@ -439,7 +442,7 @@ function VehiclesForkliftDailyInspectionPage() {
         >
           {isSubmitting ? 'Saving...' : 'Save Register'}
         </button>
-      </div></form>
+      </form>
 
       <Link
         to="/healthandwealth"
@@ -451,8 +454,5 @@ function VehiclesForkliftDailyInspectionPage() {
   )
 }
 
-export default VehiclesForkliftDailyInspectionPage
-
-
-
+export default EmxPage
 

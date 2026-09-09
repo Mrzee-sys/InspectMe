@@ -1,53 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
-export default function SyncClockCard() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+export default function SyncClockCard({ ringGradient }) {
+  const [time, setTime] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Retro Digital Clock Formatting
-  const year = currentTime.getFullYear();
-  const month = String(currentTime.getMonth() + 1).padStart(2, '0');
-  const day = String(currentTime.getDate()).padStart(2, '0');
-  const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-  const weekDay = days[currentTime.getDay()];
-  const digitalDate = `${year}-${month}-${day} ${weekDay}`;
+  const formattedDate = time.toLocaleDateString('en-CA'); 
+  const dayOfWeek = time.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+  const timeString = time.toLocaleTimeString('en-GB', { hour12: false }); 
 
-  const hours = String(currentTime.getHours()).padStart(2, '0');
-  const minutes = String(currentTime.getMinutes()).padStart(2, '0');
-  const seconds = String(currentTime.getSeconds()).padStart(2, '0');
-  const digitalTime = `${hours}:${minutes}:${seconds}`;
+  // Fallback to the standard Emerald/Cyan if no site is selected
+  const activeGradient = ringGradient || 'conic-gradient(from 0deg, #eab308, #22c55e, #06b6d4, #eab308)';
 
   return (
-    <div className="relative w-full max-w-[320px] mx-auto p-[3px] rounded-[2rem] overflow-hidden shadow-xl">
+    /* Outer Boundary */
+    <div className="relative overflow-hidden rounded-[2rem] p-[2px] w-full shadow-lg">
       
-      {/* Spinning Conic Gradient Background */}
+      {/* Dynamic Spinning Gradient */}
       <div 
-        className="absolute inset-[-100%] animate-[spin_4s_linear_infinite]"
-        style={{
-          background: 'conic-gradient(from 0deg, #14b8a6, #2dd4bf, #f8fafc, #14b8a6)'
-        }}
+        className="absolute inset-[-150%] animate-[spin_4s_linear_infinite]" 
+        style={{ background: activeGradient }}
       />
       
-      {/* Glassmorphic Inner Mask */}
-      <div className="relative flex items-center justify-center w-full h-full rounded-[calc(2rem-3px)] bg-white/40 backdrop-blur-md px-6 py-8">
+      {/* HIGH OPACITY MASK: bg-slate-400/95 blocks the gradient bleed */}
+      <div className="relative z-10 flex flex-col items-center justify-center rounded-[calc(2rem-2px)] bg-slate-400/95 backdrop-blur-xl p-3 sm:p-4 w-full h-full border border-white/20">
         
-        {/* Tightened Inner Solid White Pill (Preserved Clock Face) */}
-        <div className="px-6 py-4 w-full max-w-[240px] rounded-[1.75rem] bg-gradient-to-b from-white to-white/95 shadow-[0_10px_20px_rgba(0,0,0,0.1),0_2px_4px_rgba(255,255,255,1)_inset] border border-white flex flex-col items-center justify-center space-y-0.5 relative z-10">
-          <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white to-transparent pointer-events-none rounded-t-[1.75rem]" />
-          
-          <div className="text-[11px] text-teal-900 font-mono font-extrabold tracking-[0.2em] uppercase z-10 drop-shadow-sm">
-            {digitalDate}
-          </div>
-          <div className="text-4xl font-black text-slate-800 font-mono tracking-[0.1em] z-10 drop-shadow-md">
-            {digitalTime}
-          </div>
-          <div className="text-[7px] text-teal-800/60 font-mono font-extrabold tracking-widest uppercase z-10 mt-1">
+        {/* Solid White Inner Content Block */}
+        <div className="bg-white rounded-[1.25rem] w-full py-6 flex flex-col items-center justify-center shadow-sm">
+          <p className="text-[10px] font-bold text-slate-500 tracking-widest mb-2">
+            {formattedDate} {dayOfWeek}
+          </p>
+          <h1 className="text-5xl font-black text-slate-800 tracking-widest mb-1 font-mono drop-shadow-sm">
+            {timeString}
+          </h1>
+          <p className="text-[8px] font-bold text-slate-400 tracking-[0.2em] mt-1 uppercase">
             InspectMe Sync Time
-          </div>
+          </p>
         </div>
 
       </div>

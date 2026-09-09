@@ -94,7 +94,7 @@ function buildHealthSafetyEmailAnswers(inspectionType, formPayload = {}) {
     const itemAnswers = Object.entries(itemStatus).map(([label, value]) => ({
       question: label,
       result: value === "OK" ? "Pass" : "N/A",
-      comment: value === "DEF" ? "Marked DEF (Defective)." : "",
+      comment: value === "DEF" ? (((formPayload.deviations || {}).forklift || {})[label] || "Marked DEF (Defective).") : "",
       photoUrl: "",
     }));
 

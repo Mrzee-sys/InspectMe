@@ -18,9 +18,15 @@ function deriveHealthSafetyStatus(inspectionType, formPayload = {}) {
     return hasDefect ? "Amber" : "Green";
   }
 
-  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" ||
-      inspectionType === "ABLUTION_TOILET_SANITATION" ||
-      inspectionType === "CHANGE_ROOMS_SECURE_STORAGE") {
+  if (
+    inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" ||
+    inspectionType === "ABLUTION_TOILET_SANITATION" ||
+    inspectionType === "CHANGE_ROOMS_SECURE_STORAGE" ||
+    inspectionType === "DINING_CANTEEN_EATING_FACILITIES" ||
+    inspectionType === "AIR_QUALITY_TEMP_VENTILATION" ||
+    inspectionType === "LIGHTING_ERGONOMIC_WORKSTATION" ||
+    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING"
+  ) {
     const deviations = formPayload.deviations || {};
     const sectionValues = Object.values(deviations).flatMap(section => Object.values(section || {}));
 
@@ -90,9 +96,15 @@ function buildHealthSafetyEmailAnswers(inspectionType, formPayload = {}) {
     return [...metadata, ...itemAnswers];
   }
 
-  if (inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" || 
-      inspectionType === "ABLUTION_TOILET_SANITATION" ||
-      inspectionType === "CHANGE_ROOMS_SECURE_STORAGE") {
+  if (
+    inspectionType === "FIRE_FIGHTING_EQUIPMENT_INSPECTION_REGISTER" || 
+    inspectionType === "ABLUTION_TOILET_SANITATION" ||
+    inspectionType === "CHANGE_ROOMS_SECURE_STORAGE" ||
+    inspectionType === "DINING_CANTEEN_EATING_FACILITIES" ||
+    inspectionType === "AIR_QUALITY_TEMP_VENTILATION" ||
+    inspectionType === "LIGHTING_ERGONOMIC_WORKSTATION" ||
+    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING"
+  ) {
     const details = formPayload.details || {};
     const deviations = formPayload.deviations || {};
 

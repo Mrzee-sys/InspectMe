@@ -47,7 +47,11 @@ const healthSafetyInspectionSchema = new mongoose.Schema(
         "AIR_QUALITY_TEMP_VENTILATION",
         "LIGHTING_ERGONOMIC_WORKSTATION",
         "CLEAN_HOUSEKEEPING_SAFE_WALKING",
-        "EMERGENCY_EXITS"
+        "EMERGENCY_EXITS",
+        "EARTHMOVING_EQUIPMENT",
+        "DUMP_TRUCKS",
+        "MOBILE_CRANES",
+        "ELEVATING_PLATFORMS"
       ],
       index: true,
     },

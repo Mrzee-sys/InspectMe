@@ -46,7 +46,8 @@ const healthSafetyInspectionSchema = new mongoose.Schema(
         "DINING_CANTEEN_EATING_FACILITIES",
         "AIR_QUALITY_TEMP_VENTILATION",
         "LIGHTING_ERGONOMIC_WORKSTATION",
-        "CLEAN_HOUSEKEEPING_SAFE_WALKING"
+        "CLEAN_HOUSEKEEPING_SAFE_WALKING",
+        "EMERGENCY_EXITS"
       ],
       index: true,
     },

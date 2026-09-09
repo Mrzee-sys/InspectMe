@@ -25,7 +25,8 @@ function deriveHealthSafetyStatus(inspectionType, formPayload = {}) {
     inspectionType === "DINING_CANTEEN_EATING_FACILITIES" ||
     inspectionType === "AIR_QUALITY_TEMP_VENTILATION" ||
     inspectionType === "LIGHTING_ERGONOMIC_WORKSTATION" ||
-    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING"
+    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING" ||
+    inspectionType === "EMERGENCY_EXITS"
   ) {
     const deviations = formPayload.deviations || {};
     const sectionValues = Object.values(deviations).flatMap(section => Object.values(section || {}));
@@ -103,7 +104,8 @@ function buildHealthSafetyEmailAnswers(inspectionType, formPayload = {}) {
     inspectionType === "DINING_CANTEEN_EATING_FACILITIES" ||
     inspectionType === "AIR_QUALITY_TEMP_VENTILATION" ||
     inspectionType === "LIGHTING_ERGONOMIC_WORKSTATION" ||
-    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING"
+    inspectionType === "CLEAN_HOUSEKEEPING_SAFE_WALKING" ||
+    inspectionType === "EMERGENCY_EXITS"
   ) {
     const details = formPayload.details || {};
     const deviations = formPayload.deviations || {};
